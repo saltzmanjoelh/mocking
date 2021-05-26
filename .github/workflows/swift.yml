@@ -33,7 +33,7 @@ jobs:
     - name: Convert coverage files
       run: |
         xcrun llvm-cov export -format "lcov" \
-          .build/debug/AWSDeployKitPackageTests.xctest/Contents/MacOs/AWSDeployKitPackageTests \
+          .build/debug/MockingPackageTests.xctest/Contents/MacOs/MockingPackageTests \
           -ignore-filename-regex="\/Tests\/" \
           -instr-profile=.build/debug/codecov/default.profdata > info.lcov  
     - name: Upload to codecov.io
