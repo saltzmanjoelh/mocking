@@ -8,7 +8,7 @@
 Simple property wrappers to help with mocks
 
 ## TLDR
-Take a look at [MockFileManager](Sources/Mocking/MockTypes.MockFileManager.swift) for different examples.
+Take a look at [MockFileManager](Sources/Mocking/MockTypes/MockFileManager.swift) for different examples.
 
 ## Usage
 
@@ -22,7 +22,7 @@ public protocol FileManageable {
 extension FileManager: FileManageable { }
 ```
 
-Next create your mock class that conforms to `FileManageable`. 
+Next, create your mock class that conforms to `FileManageable`. 
 
 ```swift
 public class MockFileManager: NSObject, FileManageable {
