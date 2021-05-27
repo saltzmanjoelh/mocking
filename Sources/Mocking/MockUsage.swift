@@ -42,7 +42,7 @@ extension Mockable where Context: Equatable {
 }
 
 extension Mockable where Context == EquatableTuple<CodableInput> {
-    public func wasCalled<Value: Codable>(search: Value) throws -> Bool {
+    public func wasCalled<Value: Codable>(with search: Value) throws -> Bool {
         return try usage.history.first(where:{ entry in // Iterate the history entries (EquatableTuples)
             try entry.context.inputs.first(where: { entryInput in // Iterate the inputs (CodableInput)
                 let inputData = try JSONEncoder().encode(search) // Encode the search

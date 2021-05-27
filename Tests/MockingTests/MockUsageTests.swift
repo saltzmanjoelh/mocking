@@ -15,7 +15,7 @@ final class MockUsageTests: XCTestCase {
                                                 attributes: attributes)
         
         // When calling wasCalled with one of it's inputs
-        let result = try fileManager.$createDirectory.wasCalled(search: url)
+        let result = try fileManager.$createDirectory.wasCalled(with: url)
         
         // Then it should return true
         XCTAssertTrue(result, "Searching by partial tuple should have returned true.")
