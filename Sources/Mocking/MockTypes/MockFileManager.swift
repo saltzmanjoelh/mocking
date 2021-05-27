@@ -12,6 +12,7 @@ public protocol FileManageable {
     func removeItem(at URL: URL) throws
     func copyItem(at srcURL: URL, to dstURL: URL) throws
     func contentsOfDirectory(at url: URL, includingPropertiesForKeys keys: [URLResourceKey]?, options mask: FileManager.DirectoryEnumerationOptions) throws -> [URL]
+    func createDirectory(at url: URL, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]?) throws
 }
 extension FileManager: FileManageable { }
 
@@ -71,6 +72,17 @@ public class MockFileManager: NSObject, FileManageable {
         return try FileManager.default.contentsOfDirectory(at: try tuple.inputs[0].decode(),
                                                            includingPropertiesForKeys: try tuple.inputs[1].decode(),
                                                            options: try tuple.inputs[2].decode())
+    }
+    
+    public func createDirectory(at url: URL, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]? = nil) throws {
+        return try _createDirectory.getValue(EquatableTuple([try CodableInput(url),
+                                             try CodableInput(createIntermediates),
+                                             try CodableInput(attributes as Any)]))
+    }
+    @ThrowingMock public var createDirectory = { (tuple: EquatableTuple<CodableInput>) throws in
+        return try FileManager.default.createDirectory(at: try tuple.inputs[0].decode(),
+                                                       withIntermediateDirectories: try tuple.inputs[1].decode(),
+                                                       attributes: try JSONSerialization.jsonObject(with: tuple.inputs[2].data, options: []) as? [FileAttributeKey : Any])
     }
 }
 

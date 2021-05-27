@@ -28,6 +28,9 @@ public struct CodableInput: Equatable {
     public init<Value: Codable>(_ rawValue: Value) throws {
         self.data = try JSONEncoder().encode(rawValue)
     }
+    public init(_ rawValue: Any) throws {
+        self.data = try JSONSerialization.data(withJSONObject: rawValue, options: [])
+    }
     public func decode<Value: Codable>() throws -> Value {
         return try JSONDecoder().decode(Value.self, from: data)
     }

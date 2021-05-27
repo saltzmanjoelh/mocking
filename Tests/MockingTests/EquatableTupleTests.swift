@@ -17,9 +17,20 @@ final class EquatableTupleTests: XCTestCase {
         XCTAssertThrowsError(try fileManager.copyItem(at: URL(fileURLWithPath: ""), to: URL(fileURLWithPath: "")))
         XCTAssertTrue(fileManager.$copyItem.wasCalled)
     }
-    
+    func testCodableInputDecode() throws {
+        // Given an encoded Codable
+        let url = URL(fileURLWithPath: "/tmp")
+        let encoded = try CodableInput(url)
+        
+        // When decoding
+        let result: URL = try encoded.decode()
+        
+        // The the original value should be received
+        XCTAssertEqual(url, result)
+    }
     
     public var allTests = [
         ("testEquatableTuple_handlesErrors", testEquatableTuple_handlesErrors),
+        ("testCodableInputDecode", testCodableInputDecode),
     ]
 }

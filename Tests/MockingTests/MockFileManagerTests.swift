@@ -70,18 +70,6 @@ final class MockFileManagerTests: XCTestCase {
         // Then it should it should store it in the history
         XCTAssertTrue(fileManager.$copyItem.wasCalled(with: .init([source, destination])))
     }
-    func testCopyItem_defaultValueLoader() throws {
-        // Given a mock that requires an EquatableTuple
-        let source = URL(fileURLWithPath: "source")
-        let destination = URL(fileURLWithPath: "destination")
-        let fileManager = MockFileManager()
-        
-        // When calling the mock that encodes inputs to EquatableTuple
-        XCTAssertThrowsError(try fileManager.copyItem(at: source, to: destination))
-        
-        // Then it should it should store it in the history
-        XCTAssertTrue(fileManager.$copyItem.wasCalled(with: .init([source, destination])))
-    }
     func testContentsOfDirectory() throws {
         // Give the inputs for a mock
         let url = URL(fileURLWithPath: "")
@@ -97,18 +85,22 @@ final class MockFileManagerTests: XCTestCase {
         XCTAssertEqual(result, [URL(fileURLWithPath: "success")])
         XCTAssertTrue(fileManager.$contentsOfDirectory.wasCalled)
     }
-    func testContentsOfDirectory_defaultValueLoader() throws {
-        // Give the inputs for a mock
-        let url = URL(fileURLWithPath: "/tmp")
-        let keys = [URLResourceKey]()
-        let mask: FileManager.DirectoryEnumerationOptions = []
+    
+    func testCreateDirectory() throws {
+        // Given the inputs for a mock
+        let url = URL(fileURLWithPath: "/tmp/sub")
+        let intermediateDirectories = false
+        let attributes = [FileAttributeKey.posixPermissions: 0o777]
         let fileManager = MockFileManager()
+        fileManager.createDirectory = { _ in }
         
-        // When contentsOfDirectory is called
-        let _ = try fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: keys, options: mask)
+        // When createDirectory is called
+        let _ = try fileManager.createDirectory(at: url,
+                                                withIntermediateDirectories: intermediateDirectories,
+                                                attributes: attributes)
         
         // Then it should be called without throwing
-        XCTAssertTrue(fileManager.$contentsOfDirectory.wasCalled)
+        XCTAssertTrue(fileManager.$createDirectory.wasCalled)
     }
     
     public var allTests = [
@@ -118,6 +110,6 @@ final class MockFileManagerTests: XCTestCase {
         ("testRemoveItem", testRemoveItem),
         ("testCopyItem", testCopyItem),
         ("testContentsOfDirectory", testContentsOfDirectory),
-        ("testContentsOfDirectory_defaultValueLoader", testContentsOfDirectory_defaultValueLoader)
+        ("testCreateDirectory", testCreateDirectory),
     ]
 }
