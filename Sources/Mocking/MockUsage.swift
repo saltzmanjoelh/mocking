@@ -34,19 +34,26 @@ extension Mockable where Context: Equatable {
     public var wasCalled: Bool { usage.history.count > 0 }
     public func wasCalled(with search: Context) -> Bool {
         return usage.history.first { entry in
-            /*print("search: \(search)")
-            print("history: \(entry.context)")*/
             return entry.context == search
         } != nil
+    }
+    public func wasCalled<Value: Equatable>(with search: Value) -> Bool
+    where Context == EquatableTuple<Value> {
+        return usage.history.first(where:{ entry in // Iterate the history entries (context: EquatableTuples)
+            entry.context.inputs.first(where: { entryInput in // Iterate the inputs (CodableInput)
+                return entryInput == search // and compare against the data
+            }) != nil
+        }) != nil
+
     }
 }
 
 extension Mockable where Context == EquatableTuple<CodableInput> {
-    public func wasCalled<Value: Codable>(withInput search: Value) throws -> Bool {
-        return try usage.history.first(where:{ entry in // Iterate the history entries (EquatableTuples)
-            try entry.context.inputs.first(where: { entryInput in // Iterate the inputs (CodableInput)
+    public func wasCalled<Value: Codable>(with search: Value) throws -> Bool {
+        return try usage.history.first(where:{ entry in // Iterate the history entries (cotext: EquatableTuples)
+            try entry.context.inputs.first(where: { (codableInput: CodableInput) throws -> Bool in // Iterate the inputs (CodableInput)
                 let inputData = try JSONEncoder().encode(search) // Encode the search
-                return entryInput.data == inputData // and compare against the data
+                return codableInput.data == inputData // and compare against the data
             }) != nil
         }) != nil
     }
