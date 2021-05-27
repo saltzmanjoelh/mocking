@@ -9,5 +9,7 @@ import XCTest
 import MockingTests
 
 var tests = [XCTestCaseEntry]()
+tests += EquatableTupleTests.allTests()
+tests += MockFileManagerTests.allTests()
 tests += MockFileManagerTests.allTests()
 XCTMain(tests)
