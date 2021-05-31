@@ -23,7 +23,7 @@ public struct EquatableTuple<Input: Equatable>: Equatable {
 /// We want Equatable inputs so that we can use the `wasCalled` helpers.
 public struct CodableInput: Equatable {
     /// The encoded data of the represented Value
-    let data: Data
+    public let data: Data
     
     public init<Value: Codable>(_ rawValue: Value) throws {
         self.data = try JSONEncoder().encode(rawValue)

@@ -7,7 +7,7 @@
 
 import Foundation
 
-@propertyWrapper struct ThrowingMock<Context, Value>: Mockable {
+@propertyWrapper public struct ThrowingMock<Context, Value>: Mockable {
 
     public var usage: MockUsage<Context, Value>
     public var wrappedValue: (Context) throws -> Value
