@@ -7,7 +7,7 @@
 
 import Foundation
 
-@propertyWrapper public struct ThrowingMock<Context, Value>: Mockable {
+@propertyWrapper public final class ThrowingMock<Context, Value>: Mockable {
 
     public var usage: MockUsage<Context, Value>
     public var wrappedValue: (Context) throws -> Value
@@ -20,7 +20,7 @@ import Foundation
         self.defaultValueLoader = wrappedValue
     }
     
-    public mutating func getValue(_ context: Context) throws -> Value {
+    public func getValue(_ context: Context) throws -> Value {
         let result: Value
         do {
             result = try wrappedValue(context)

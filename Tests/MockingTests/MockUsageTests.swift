@@ -37,5 +37,6 @@ final class MockUsageTests: XCTestCase {
     
     public var allTests = [
         ("testSearchingForEquatableTupleUsage", testSearchingForEquatableTupleUsage),
+        ("testSearchingForEquatableTupleUsage", testSearchingForEquatableTupleUsage),
     ]
 }

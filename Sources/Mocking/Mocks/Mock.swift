@@ -7,7 +7,7 @@
 
 import Foundation
 
-@propertyWrapper public struct Mock<Context, Value>: Mockable {
+@propertyWrapper public final class Mock<Context, Value>: Mockable {
 
     public var usage: MockUsage<Context, Value>
     public var defaultValueLoader: (Context) -> Value
