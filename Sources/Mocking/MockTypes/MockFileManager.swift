@@ -8,11 +8,14 @@
 import Foundation
 
 public protocol FileManageable {
+    var currentDirectoryPath: String { get }
+    
     func fileExists(atPath path: String) -> Bool
     func removeItem(at URL: URL) throws
     func copyItem(at srcURL: URL, to dstURL: URL) throws
     func contentsOfDirectory(at url: URL, includingPropertiesForKeys keys: [URLResourceKey]?, options mask: FileManager.DirectoryEnumerationOptions) throws -> [URL]
     func contentsOfDirectory(atPath path: String) throws -> [String]
+    func contents(atPath path: String) -> Data?
     func createDirectory(at url: URL, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]?) throws
     func mountedVolumeURLs(includingResourceValuesForKeys propertyKeys: [URLResourceKey]?, options: FileManager.VolumeEnumerationOptions) -> [URL]?
 }
@@ -80,12 +83,21 @@ public class MockFileManager: NSObject, FileManageable {
                                                            options: try tuple.inputs[2].decode())
     }
     
+    
+    public func contentsOfDirectory(atPath path: String) throws -> [String] {
+        return try _contentsOfDirectoryAtPath.getValue(path)
+    }
     @ThrowingMock
     public var contentsOfDirectoryAtPath = { (path: String) throws in
         return try FileManager.default.contentsOfDirectory(atPath: path)
     }
-    public func contentsOfDirectory(atPath path: String) throws -> [String] {
-        return try _contentsOfDirectoryAtPath.getValue(path)
+    
+    public func contents(atPath path: String) -> Data? {
+        return _contentsAtPath.getValue(path)
+    }
+    @Mock
+    public var contentsAtPath = { path in
+        return FileManager.default.contents(atPath: path)
     }
     
     public func createDirectory(at url: URL, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]? = nil) throws {
@@ -107,8 +119,10 @@ public class MockFileManager: NSObject, FileManageable {
     }
     
     public func mountedVolumeURLs(includingResourceValuesForKeys propertyKeys: [URLResourceKey]?, options: FileManager.VolumeEnumerationOptions = []) -> [URL]? {
-        return try! _mountedVolumeURLs.getValue(EquatableTuple([try CodableInput(propertyKeys), try CodableInput(options)]))
+        return _mountedVolumeURLs.getValue(EquatableTuple([try! CodableInput(propertyKeys), try! CodableInput(options)]))
     }
+    
+    public var currentDirectoryPath: String = FileManager.default.currentDirectoryPath
 }
 
 

@@ -75,6 +75,19 @@ final class MockFileManagerTests: XCTestCase {
         XCTAssertEqual(result, ["success"])
         XCTAssertTrue(fileManager.$contentsOfDirectoryAtPath.wasCalled)
     }
+    func testContentsAtPath() throws {
+        // Given a path
+        let path = "/some/path"
+        let expected = "expected".data(using: .utf8)
+        let fileManager = MockFileManager()
+        fileManager.contentsAtPath = { _ in return expected }
+        
+        // When calling contents(at:)
+        let result = fileManager.contents(atPath: path)
+        
+        // Then the mocked data is returned
+        XCTAssertEqual(result, expected)
+    }
     
     func testCreateDirectory() throws {
         // Given the inputs and mocked result for a mock
@@ -118,6 +131,7 @@ final class MockFileManagerTests: XCTestCase {
         ("testCopyItem", testCopyItem),
         ("testContentsOfDirectoryAtUrl", testContentsOfDirectoryAtUrl),
         ("testContentsOfDirectoryAtPath", testContentsOfDirectoryAtPath),
+        ("testContentsAtPath", testContentsAtPath),
         ("testCreateDirectory", testCreateDirectory),
         ("testMountedVolumeURLs", testMountedVolumeURLs),
     ]
