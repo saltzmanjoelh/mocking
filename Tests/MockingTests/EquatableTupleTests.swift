@@ -29,8 +29,22 @@ final class EquatableTupleTests: XCTestCase {
         XCTAssertEqual(url, result)
     }
     
+    func testCodableInputDecodeAny() throws {
+        // Given an encoded Dictionary
+        let original = ["key1": "value1"]
+        let encoded = try CodableInput(original)
+        
+        // When decoding
+        let decoded: Any = try encoded.decode()
+        
+        // The the original value should be received
+        let result = decoded as? [String: String]
+        XCTAssertEqual(result, original)
+    }
+    
     public var allTests = [
         ("testEquatableTuple_handlesErrors", testEquatableTuple_handlesErrors),
         ("testCodableInputDecode", testCodableInputDecode),
+        ("testCodableInputDecodeAny", testCodableInputDecodeAny),
     ]
 }

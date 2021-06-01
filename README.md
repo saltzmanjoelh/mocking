@@ -44,7 +44,8 @@ public class MockFileManager: NSObject, FileManageable {
     public func fileExists(atPath path: String) -> Bool {
         return _fileExists.getValue(path) // Use our @Mock to perform the action and get the value
     }
-    @Mock public var fileExists = { path -> Bool in
+    @Mock
+    public var fileExists = { path -> Bool in
         // Default implementation but you can override it.
         // When you are done, simply call fileManager.fileExists = fileManager.$fileExists.defaultValueLoader
         return FileManager.default.fileExists(atPath: path)
@@ -52,7 +53,7 @@ public class MockFileManager: NSObject, FileManageable {
 }
 ```
 
-The `fileExists` function simply uses the  `@Mock` [property wrapper](Sources/Mocking/Mocks/Mock.swift) to perform an action and load a value. The property wrapper stores it's initial closure as the `defaultValueLoader`. Later, you can set it to use a custom closure. Typically, I create a new instance of the `MockFileManager` for every test so that I don't have to reset the custom closure back to default when I'm done. However, since the mock stores the original closure as default, you can simply call `fileManager.fileExists = fileManager.$fileExists.defaultValueLoader` to reset it back to default. 
+The `fileExists` function simply uses the  `@Mock` [property wrapper](Sources/Mocking/Mocks/Mock.swift) to perform an action and load a value. The property wrapper stores it's initial closure as the `defaultValueLoader`. Later, you can set it to use a custom closure. Typically, I create a new instance of the `MockFileManager` for every test so that I don't have to reset the custom closure back to default when I'm done. However, since the mock stores the original closure as default, you can simply call `fileManager.$fileExists.resetLoader()` to reset it back to default. 
 
 The dollar sign syntax calls the `projectedValue` property of the mock which simply returns itself. This gives you direct access to it's usage property `fileManager.$fileExists.usage` if you need it. 
 
@@ -88,7 +89,7 @@ func testFileExists() {
 
 ## Multiple Inputs
 
-The `fileExists(atPath:)` example is simple because it's a single input. Things start to get slightly tricky when you start adding values to the Context. Take for example `copyItem(at srcURL: URL, to dstURL: URL) throws`.  You will need to use the `@ThrowingMock` [property wrapper](Sources/Mocking/Mocks/ThrowingMock.swift) since this function throws. The wrapped value takes a closure with a single Context `(Context) throws -> Value`. However, `copyItem(at:to:)` needs a source and destination. My first solution is to create a tuple for this:  `((src: mySrcURL, dstURL: myDestURL)) throws -> Void)`. You can use the tuple, but this prevents us from using the `wasCalled` helper because it requires the Context to be Equatable and tuples cannot confrom to Equatable. You end up with assertion code that looks something like this:
+The `fileExists(atPath:)` example is simple because it's a single input. Things start to get slightly tricky when you start adding values to the Context. Take for example `copyItem(at srcURL: URL, to dstURL: URL) throws`.  You will need to use the `@ThrowingMock` [property wrapper](Sources/Mocking/Mocks/ThrowingMock.swift) since this function throws. The wrapped value takes a closure with a single Context `(Context) throws -> Value`. However, `copyItem(at:to:)` needs a source and destination. My first attempt ata solution is to create a tuple for this:  `((src: mySrcURL, dstURL: myDestURL)) throws -> Void)`. You can use the tuple, but this prevents us from using the `wasCalled` helper because `wasCalled` requires that the Context is Equatable and tuples cannot confrom to Equatable. You end up with assertion code that looks something like this:
 
 ```swift
 XCTAssertTrue(fileManager.$copyItem.usage.history.contains(where: { entry in
@@ -107,7 +108,8 @@ Instead of using Swift's built-in tuple, let's use [EquatableTuple](Sources/Mock
 public func copyItem(at srcURL: URL, to dstURL: URL) throws {
     try _copyItem.getValue(EquatableTuple([srcURL, dstURL]))
 }
-@ThrowingMock public var copyItem = { (tuple: EquatableTuple) throws in
+@ThrowingMock
+public var copyItem = { (tuple: EquatableTuple) throws in
     try FileManager.default.copyItem(at: tuple.inputs[0], to: tuple.inputs[1])
 }
 ```
@@ -127,13 +129,12 @@ public func contentsOfDirectory(at url: URL, includingPropertiesForKeys keys: [U
     let context = EquatableTuple([try CodableInput(url),
                                   try CodableInput(keys),
                                   try CodableInput(mask)])
-    return try _contentsOfDirectory.getValue(context)
+    return try _contentsOfDirectoryAtUrl.getValue(context)
 }
-@ThrowingMock public var contentsOfDirectory = { (tuple: EquatableTuple<CodableInput>) throws in
+@ThrowingMock
+public var contentsOfDirectoryAtUrl = { (tuple: EquatableTuple<CodableInput>) throws in
     return try FileManager.default.contentsOfDirectory(at: try tuple.inputs[0].decode(),
                                                        includingPropertiesForKeys: try tuple.inputs[1].decode(),
                                                        options: try tuple.inputs[2].decode())
 }
-
-
 ```

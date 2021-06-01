@@ -12,7 +12,9 @@ public protocol FileManageable {
     func removeItem(at URL: URL) throws
     func copyItem(at srcURL: URL, to dstURL: URL) throws
     func contentsOfDirectory(at url: URL, includingPropertiesForKeys keys: [URLResourceKey]?, options mask: FileManager.DirectoryEnumerationOptions) throws -> [URL]
+    func contentsOfDirectory(atPath path: String) throws -> [String]
     func createDirectory(at url: URL, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]?) throws
+    func mountedVolumeURLs(includingResourceValuesForKeys propertyKeys: [URLResourceKey]?, options: FileManager.VolumeEnumerationOptions) -> [URL]?
 }
 extension FileManager: FileManageable { }
 
@@ -22,7 +24,8 @@ public class MockFileManager: NSObject, FileManageable {
     public func fileExists(atPath path: String) -> Bool {
         return _fileExists.getValue(path)
     }
-    @Mock public var fileExists = { path -> Bool in
+    @Mock
+    public var fileExists = { path -> Bool in
         // Default implementation but you can override it.
         // When you are done, simply call fileManager.fileExists = fileManager.$fileExists.defaultValueLoader
         return FileManager.default.fileExists(atPath: path)
@@ -32,7 +35,8 @@ public class MockFileManager: NSObject, FileManageable {
     public func removeItem(at URL: URL) throws {
         try _removeItem.getValue(URL)
     }
-    @ThrowingMock public var removeItem = { URL in
+    @ThrowingMock
+    public var removeItem = { URL in
         // Default implementation but you can override it.
         // When you are done, simply call fileManager.removeItem = fileManager.$removeItem.defaultValueLoader
         try FileManager.default.removeItem(at: URL)
@@ -42,7 +46,8 @@ public class MockFileManager: NSObject, FileManageable {
     public func copyItem(at srcURL: URL, to dstURL: URL) throws {
         try _copyItem.getValue(EquatableTuple([srcURL, dstURL]))
     }
-    @ThrowingMock public var copyItem = { (tuple: EquatableTuple) throws in
+    @ThrowingMock
+    public var copyItem = { (tuple: EquatableTuple) throws in
         // Default implementation but you can override it.
         // When you are done, simply call fileManager.copyItem = fileManager.$copyItem.defaultValueLoader
         try FileManager.default.copyItem(at: tuple.inputs[0], to: tuple.inputs[1])
@@ -66,23 +71,43 @@ public class MockFileManager: NSObject, FileManageable {
         let context = EquatableTuple([try CodableInput(url),
                                       try CodableInput(keys),
                                       try CodableInput(mask)])
-        return try _contentsOfDirectory.getValue(context)
+        return try _contentsOfDirectoryAtUrl.getValue(context)
     }
-    @ThrowingMock public var contentsOfDirectory = { (tuple: EquatableTuple<CodableInput>) throws in
+    @ThrowingMock
+    public var contentsOfDirectoryAtUrl = { (tuple: EquatableTuple<CodableInput>) throws in
         return try FileManager.default.contentsOfDirectory(at: try tuple.inputs[0].decode(),
                                                            includingPropertiesForKeys: try tuple.inputs[1].decode(),
                                                            options: try tuple.inputs[2].decode())
     }
     
+    @ThrowingMock
+    public var contentsOfDirectoryAtPath = { (path: String) throws in
+        return try FileManager.default.contentsOfDirectory(atPath: path)
+    }
+    public func contentsOfDirectory(atPath path: String) throws -> [String] {
+        return try _contentsOfDirectoryAtPath.getValue(path)
+    }
+    
     public func createDirectory(at url: URL, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]? = nil) throws {
         return try _createDirectory.getValue(EquatableTuple([try CodableInput(url),
                                              try CodableInput(createIntermediates),
-                                             try CodableInput(attributes as Any)]))
+                                             try CodableInput(anyValue: attributes as Any)]))
     }
-    @ThrowingMock public var createDirectory = { (tuple: EquatableTuple<CodableInput>) throws in
+    @ThrowingMock
+    public var createDirectory = { (tuple: EquatableTuple<CodableInput>) throws in
         return try FileManager.default.createDirectory(at: try tuple.inputs[0].decode(),
                                                        withIntermediateDirectories: try tuple.inputs[1].decode(),
-                                                       attributes: try JSONSerialization.jsonObject(with: tuple.inputs[2].data, options: []) as? [FileAttributeKey : Any])
+                                                       attributes: tuple.inputs[2].decode() as? [FileAttributeKey : Any])
+    }
+    
+    @Mock
+    public var mountedVolumeURLs = { (tuple: EquatableTuple<CodableInput>) -> [URL]? in
+        return FileManager.default.mountedVolumeURLs(includingResourceValuesForKeys: try! tuple.inputs[0].decode(),
+                                                     options: try! tuple.inputs[1].decode())
+    }
+    
+    public func mountedVolumeURLs(includingResourceValuesForKeys propertyKeys: [URLResourceKey]?, options: FileManager.VolumeEnumerationOptions = []) -> [URL]? {
+        return try! _mountedVolumeURLs.getValue(EquatableTuple([try CodableInput(propertyKeys), try CodableInput(options)]))
     }
 }
 

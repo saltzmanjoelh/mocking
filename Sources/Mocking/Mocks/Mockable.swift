@@ -12,5 +12,5 @@ public protocol Mockable {
     associatedtype Value
     var usage: MockUsage<Context, Value> { get set }
     var projectedValue: Self { get }
-//    mutating func resetLoader()
+    func resetLoader()
 }

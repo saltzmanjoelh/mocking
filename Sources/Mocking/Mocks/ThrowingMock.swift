@@ -32,7 +32,7 @@ import Foundation
         return result
     }
     
-//    public mutating func resetLoader() {
-//        self.wrappedValue = defaultValueLoader
-//    }
+    public func resetLoader() {
+        self.wrappedValue = defaultValueLoader
+    }
 }

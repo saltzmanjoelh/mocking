@@ -10,3 +10,4 @@ import Foundation
 extension URLResourceKey: Codable { }
 extension FileManager.DirectoryEnumerationOptions: Codable { }
 extension FileAttributeKey: Codable { }
+extension FileManager.VolumeEnumerationOptions: Codable { }

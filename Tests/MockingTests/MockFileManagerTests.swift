@@ -7,29 +7,6 @@ final class MockFileManagerTests: XCTestCase {
         case expected
     }
     
-    func testResetLoader() {
-        // Given a mock that has been reset
-        let fileManager = MockFileManager()
-        fileManager.fileExists = { _ in return true }
-        fileManager.fileExists = fileManager.$fileExists.defaultValueLoader
-        
-        // When calling the mock
-        let result = fileManager.fileExists(atPath: "invalid")
-        
-        // Then the default valueLoad
-        XCTAssertFalse(result, "False should have been returned for the \"invalid\" path.")
-        XCTAssertTrue(fileManager.$fileExists.wasCalled, "The mock value loader should have been called.")
-    }
-    func testDefaultValueLoader() {
-        // Given a mock that has not been customized
-        let fileManager = MockFileManager()
-        
-        // When calling the mock
-        let result = fileManager.fileExists(atPath: "/tmp")
-        
-        // Then the default value loader should be called
-        XCTAssertTrue(result, "True should have been returned")
-    }
     func testFileExists() {
         // Given a mocked function
         let path = "Mocking 💪"
@@ -70,24 +47,37 @@ final class MockFileManagerTests: XCTestCase {
         // Then it should it should store it in the history
         XCTAssertTrue(fileManager.$copyItem.wasCalled(with: .init([source, destination])))
     }
-    func testContentsOfDirectory() throws {
-        // Give the inputs for a mock
+    func testContentsOfDirectoryAtUrl() throws {
+        // Given the inputs and mocked result for a mock
         let url = URL(fileURLWithPath: "")
         let keys = [URLResourceKey]()
         let mask: FileManager.DirectoryEnumerationOptions = []
         let fileManager = MockFileManager()
-        fileManager.contentsOfDirectory = { _ in return [URL(fileURLWithPath: "success")] }
+        fileManager.contentsOfDirectoryAtUrl = { _ in return [URL(fileURLWithPath: "success")] }
         
         // When contentsOfDirectory is called
         let result = try fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: keys, options: mask)
         
-        // Then it should be called without throwing
+        // Then then mocked result should be returned
         XCTAssertEqual(result, [URL(fileURLWithPath: "success")])
-        XCTAssertTrue(fileManager.$contentsOfDirectory.wasCalled)
+        XCTAssertTrue(fileManager.$contentsOfDirectoryAtUrl.wasCalled)
+    }
+    func testContentsOfDirectoryAtPath() throws {
+        // Given the inputs and mocked result for a mock
+        let path = "/some/path"
+        let fileManager = MockFileManager()
+        fileManager.contentsOfDirectoryAtPath = { _ in return ["success"] }
+        
+        // When contentsOfDirectory is called
+        let result = try fileManager.contentsOfDirectory(atPath: path)
+        
+        // Then then mocked result should be returned
+        XCTAssertEqual(result, ["success"])
+        XCTAssertTrue(fileManager.$contentsOfDirectoryAtPath.wasCalled)
     }
     
     func testCreateDirectory() throws {
-        // Given the inputs for a mock
+        // Given the inputs and mocked result for a mock
         let url = URL(fileURLWithPath: "/tmp/sub")
         let intermediateDirectories = false
         let attributes = [FileAttributeKey.posixPermissions: 0o777]
@@ -99,17 +89,36 @@ final class MockFileManagerTests: XCTestCase {
                                                 withIntermediateDirectories: intermediateDirectories,
                                                 attributes: attributes)
         
-        // Then it should be called without throwing
+        // Then then mocked result should be returned
         XCTAssertTrue(fileManager.$createDirectory.wasCalled)
     }
     
+    func testMountedVolumeURLs() {
+        // Given the inputs for the mock and a mocked response
+        let propertyKeys: [URLResourceKey]? = [.addedToDirectoryDateKey]
+        let options: FileManager.VolumeEnumerationOptions = .skipHiddenVolumes
+        let expected = [URL(fileURLWithPath: "success")]
+        let fileManager = MockFileManager()
+        fileManager.mountedVolumeURLs = { _ in
+            return expected
+        }
+        
+        
+        // When calling mountedVolumeURLs
+        let result = fileManager.mountedVolumeURLs(includingResourceValuesForKeys: propertyKeys,
+                                                   options: options)
+        
+        // Then the mocked result should be returned
+        XCTAssertEqual(result, expected)
+    }
+    
     public var allTests = [
-        ("testResetLoader", testResetLoader),
-        ("testDefaultValueLoader", testDefaultValueLoader),
         ("testFileExists", testFileExists),
         ("testRemoveItem", testRemoveItem),
         ("testCopyItem", testCopyItem),
-        ("testContentsOfDirectory", testContentsOfDirectory),
+        ("testContentsOfDirectoryAtUrl", testContentsOfDirectoryAtUrl),
+        ("testContentsOfDirectoryAtPath", testContentsOfDirectoryAtPath),
         ("testCreateDirectory", testCreateDirectory),
+        ("testMountedVolumeURLs", testMountedVolumeURLs),
     ]
 }

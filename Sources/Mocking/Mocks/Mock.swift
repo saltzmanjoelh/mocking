@@ -28,7 +28,9 @@ import Foundation
         return result
     }
     
-//    public mutating func resetLoader() {
-//        self.wrappedValue = defaultValueLoader
-//    }
+    // Reset the closure to the default one used when the mock
+    // was created.
+    public func resetLoader() {
+        self.wrappedValue = defaultValueLoader
+    }
 }
