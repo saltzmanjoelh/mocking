@@ -105,6 +105,38 @@ final class MockFileManagerTests: XCTestCase {
         // Then then mocked result should be returned
         XCTAssertTrue(fileManager.$createDirectory.wasCalled)
     }
+    func testCreateDirectory_withEmptyAttributes() throws {
+        // Given the inputs and mocked result for a mock
+        let url = URL(fileURLWithPath: "/tmp/sub")
+        let intermediateDirectories = false
+        let attributes: [FileAttributeKey: Any] = [:]
+        let fileManager = MockFileManager()
+        fileManager.createDirectory = { _ in }
+        
+        // When createDirectory is called
+        let _ = try fileManager.createDirectory(at: url,
+                                                withIntermediateDirectories: intermediateDirectories,
+                                                attributes: attributes)
+        
+        // Then then mocked result should be returned
+        XCTAssertTrue(fileManager.$createDirectory.wasCalled)
+    }
+    func testCreateDirectory_withNilAttributes() throws {
+        // Given the inputs and mocked result for a mock
+        let url = URL(fileURLWithPath: "/tmp/sub")
+        let intermediateDirectories = false
+        let attributes: [FileAttributeKey: Any]? = nil
+        let fileManager = MockFileManager()
+        fileManager.createDirectory = { _ in }
+        
+        // When createDirectory is called
+        let _ = try fileManager.createDirectory(at: url,
+                                                withIntermediateDirectories: intermediateDirectories,
+                                                attributes: attributes)
+        
+        // Then then mocked result should be returned
+        XCTAssertTrue(fileManager.$createDirectory.wasCalled)
+    }
     
     func testMountedVolumeURLs() {
         // Given the inputs for the mock and a mocked response

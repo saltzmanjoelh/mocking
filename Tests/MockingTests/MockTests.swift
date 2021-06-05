@@ -18,7 +18,7 @@ class MockTests: XCTestCase {
         fileManager.$fileExists.resetLoader()
         
         // When calling the mock
-        let result = fileManager.fileExists(atPath: "invalid")
+        let result = fileManager.fileExists(atPath: "/invalid")
         
         // Then the defaultValueLoader should be used
         XCTAssertFalse(result, "False should have been returned for the \"invalid\" path.")
@@ -35,7 +35,7 @@ class MockTests: XCTestCase {
         
         do {
             // When calling the mock
-            _ = try fileManager.contentsOfDirectory(atPath: "invalid")
+            _ = try fileManager.contentsOfDirectory(atPath: "/invalid")
             
         } catch {
             // Then the defaultValueLoader should be used

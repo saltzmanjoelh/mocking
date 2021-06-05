@@ -101,15 +101,19 @@ public class MockFileManager: NSObject, FileManageable {
     }
     
     public func createDirectory(at url: URL, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]? = nil) throws {
-        return try _createDirectory.getValue(EquatableTuple([try CodableInput(url),
-                                             try CodableInput(createIntermediates),
-                                             try CodableInput(anyValue: attributes as Any)]))
+        let codedUrl = try CodableInput(url)
+        let codedCreateIntermediates = try CodableInput(createIntermediates)
+        let codedAttributes = try CodableInput(anyValue: attributes)
+        return try _createDirectory.getValue(EquatableTuple([codedUrl, codedCreateIntermediates, codedAttributes]))
     }
     @ThrowingMock
     public var createDirectory = { (tuple: EquatableTuple<CodableInput>) throws in
-        return try FileManager.default.createDirectory(at: try tuple.inputs[0].decode(),
-                                                       withIntermediateDirectories: try tuple.inputs[1].decode(),
-                                                       attributes: tuple.inputs[2].decode() as? [FileAttributeKey : Any])
+        let url: URL = try tuple.inputs[0].decode()
+        let createIntermediates: Bool = try tuple.inputs[1].decode()
+        let attributes: [FileAttributeKey : Any]? = try tuple.inputs[2].decode()
+        try FileManager.default.createDirectory(at: url,
+                                                withIntermediateDirectories: createIntermediates,
+                                                attributes: attributes)
     }
     
     @Mock

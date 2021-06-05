@@ -28,14 +28,18 @@ public struct CodableInput: Equatable, Codable {
     public init<Value: Codable>(_ rawValue: Value) throws {
         self.data = try JSONEncoder().encode(rawValue)
     }
-    public init(anyValue rawValue: Any) throws {
-        self.data = try JSONSerialization.data(withJSONObject: rawValue, options: [])
+    public init<Value: Any>(anyValue rawValue: Value?) throws {
+        if rawValue != nil {
+            self.data = try JSONSerialization.data(withJSONObject: rawValue as Any, options: [])
+        } else {
+            self.data = Data()
+        }
     }
     public func decode<Value: Codable>() throws -> Value {
         return try JSONDecoder().decode(Value.self, from: data)
     }
-    public func decode() throws -> Any {
-        let decoded = try JSONSerialization.jsonObject(with: data, options: []) as! [String : Any]
-        return decoded
+    public func decode<Value: Any>() throws -> Value? {
+        guard data.count >= 0 else { return nil }
+        return try JSONSerialization.jsonObject(with: data, options: []) as? Value
     }
 }
