@@ -31,7 +31,7 @@ public class MockUsage<Context, Value> {
 /// for a Stub's Context, you can provide a tuple as the Context. However, a tuple cannot
 /// conform to Equatable. If all the arguments are the same type, you can use EquatableTuple.
 extension Mockable where Context: Equatable {
-    public var wasCalled: Bool { usage.history.count > 0 }
+
     public func wasCalled(with search: Context) -> Bool {
         return usage.history.first { entry in
             return entry.context == search

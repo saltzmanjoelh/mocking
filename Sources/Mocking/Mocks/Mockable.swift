@@ -14,3 +14,7 @@ public protocol Mockable {
     var projectedValue: Self { get }
     func resetLoader()
 }
+
+extension Mockable {
+    public var wasCalled: Bool { usage.history.count > 0 }
+}
