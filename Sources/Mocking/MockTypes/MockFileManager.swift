@@ -50,7 +50,7 @@ public class MockFileManager: NSObject, FileManageable {
         try _copyItem.getValue(EquatableTuple([srcURL, dstURL]))
     }
     @ThrowingMock
-    public var copyItem = { (tuple: EquatableTuple) throws in
+    public var copyItem = { (tuple: EquatableTuple<URL>) throws in
         // Default implementation but you can override it.
         // When you are done, simply call fileManager.copyItem = fileManager.$copyItem.defaultValueLoader
         try FileManager.default.copyItem(at: tuple.inputs[0], to: tuple.inputs[1])

@@ -17,6 +17,11 @@ public struct EquatableTuple<Input: Equatable>: Equatable {
         self.inputs = inputs
     }
 }
+extension EquatableTuple where Input == CodableInput {
+    public init<RawType: Codable>(encoding rawValues: [RawType]) throws {
+        self.inputs = try rawValues.map({ try CodableInput($0) })
+    }
+}
 
 /// When the inputs of a Context have different types, you can use CodableTuple to encode each input.
 /// When the mock tries to call getValue() it can decode the Inputs and use their values.
@@ -24,15 +29,19 @@ public struct EquatableTuple<Input: Equatable>: Equatable {
 public struct CodableInput: Equatable, Codable {
     /// The encoded data of the represented Value
     public let data: Data
+    public let description: String
     
     public init<Value: Codable>(_ rawValue: Value) throws {
         self.data = try JSONEncoder().encode(rawValue)
+        self.description = String(describing: rawValue)
     }
     public init<Value: Any>(anyValue rawValue: Value?) throws {
         if rawValue != nil {
             self.data = try JSONSerialization.data(withJSONObject: rawValue as Any, options: [])
+            self.description = String(describing: rawValue)
         } else {
             self.data = Data()
+            self.description = "nil"
         }
     }
     public func decode<Value: Codable>() throws -> Value {

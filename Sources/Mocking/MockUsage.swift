@@ -46,15 +46,39 @@ extension Mockable where Context: Equatable {
         }) != nil
 
     }
+    
 }
 
 extension Mockable where Context == EquatableTuple<CodableInput> {
-    public func wasCalled<Value: Codable>(with search: Value) throws -> Bool {
-        return try usage.history.first(where:{ entry in // Iterate the history entries (cotext: EquatableTuples)
-            try entry.context.inputs.first(where: { (codableInput: CodableInput) throws -> Bool in // Iterate the inputs (CodableInput)
-                let inputData = try JSONEncoder().encode(search) // Encode the search
+    
+    public func wasCalled<Value: Codable>(with search: Value) -> Bool {
+        return usage.history.first(where:{ entry in // Iterate the history entries (cotext: EquatableTuples)
+            entry.context.inputs.first(where: { (codableInput: CodableInput) -> Bool in // Iterate the inputs (CodableInput)
+                let inputData = try! JSONEncoder().encode(search) // Encode the search
                 return codableInput.data == inputData // and compare against the data
             }) != nil
         }) != nil
     }
+    
+    // Sort this out later
+//    public func wasCalledWith<Value: Codable>(_ search: Value) throws {
+//        guard wasCalled(with: search) == true else {
+//            let contexts = usage.history.map({ $0.context }).map({ $0.inputs.description })
+//            throw MockUsageError.notFound(String(describing: search), contexts)
+//        }
+//    }
+
 }
+
+//enum MockUsageError: Error, CustomStringConvertible {
+//    case notFound(String, [CustomStringConvertible])
+//    
+//    var description: String {
+//        switch self {
+//        case .notFound(let search, let contexts):
+////            let lines = entryContexts.joined(separator: "\n\t")
+////            let history = "[\n\t\(lines)\n]"
+//            return "Search criteria was not found: \(search). Here is the history:\n\(contexts)))"
+//        }
+//    }
+//}

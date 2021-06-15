@@ -15,7 +15,7 @@ final class MockUsageTests: XCTestCase {
                                                 attributes: attributes)
         
         // When calling wasCalled with one of it's inputs
-        let result = try fileManager.$createDirectory.wasCalled(with: url)
+        let result = fileManager.$createDirectory.wasCalled(with: url)
         
         // Then it should return true
         XCTAssertTrue(result, "Searching by partial tuple should have returned true.")
@@ -34,6 +34,40 @@ final class MockUsageTests: XCTestCase {
         // Then it should return true
         XCTAssertTrue(result, "Searching by partial tuple should have returned true.")
     }
+    
+//    func testWasCalledWithErrorHandling() throws {
+//        // Testing wasCalledWith<Value: Codable>(_ search: Value)
+//        // throws when the search is not found
+//        // Given a mock that was called
+//        let source = URL(fileURLWithPath: "/source")
+//        let fileManager = MockFileManager()
+//        fileManager.copyItem = { _ in }
+//        fileManager.contentsOfDirectoryAtUrl = { _ in return [] }
+//        _ = try fileManager.contentsOfDirectory(at: URL(fileURLWithPath: "/unexpected_url1"), includingPropertiesForKeys: nil)
+//
+//        do {
+//            // When calling wasCalledWith
+//            try fileManager.$contentsOfDirectoryAtUrl.wasCalledWith(source)
+//
+//            XCTFail("An error should have been thrown.")
+//        } catch {
+//            XCTAssertEqual("\(error)", MockUsageError.notFound("\(source)", [URL(fileURLWithPath: "/unexpected_url1")]).description)
+//        }
+//    }
+//    func testWasCalledWithDoesNotThrowWithValidSearch() throws {
+//        // Testing wasCalledWith<Value: Codable>(_ search: Value)
+//        // throws when the search is not found
+//        // Given a mock that was called
+//        let source = URL(fileURLWithPath: "/source")
+//        let fileManager = MockFileManager()
+//        fileManager.copyItem = { _ in }
+//        fileManager.contentsOfDirectoryAtUrl = { _ in return [] }
+//        _ = try fileManager.contentsOfDirectory(at: source, includingPropertiesForKeys: nil)
+//        
+//        // When calling wasCalledWith
+//        // Then no error should be thrown
+//        XCTAssertNoThrow(try fileManager.$contentsOfDirectoryAtUrl.wasCalledWith(source))
+//    }
     
     public var allTests = [
         ("testSearchingForEquatableTupleUsage", testSearchingForEquatableTupleUsage),
