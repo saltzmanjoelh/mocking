@@ -30,6 +30,12 @@ public class MockUsage<Context, Value> {
     }
 }
 
+extension MockUsage where Context == EquatableTuple<CodableInput> {
+    public var inputDescriptions: [[String]] {
+        return contexts.map({ $0.inputs.map({ $0.description }) })
+    }
+}
+
 /// This only works when the Context is Equatable. If you have more than one argument
 /// for a Stub's Context, you can provide a tuple as the Context. However, a tuple cannot
 /// conform to Equatable. If all the arguments are the same type, you can use EquatableTuple.

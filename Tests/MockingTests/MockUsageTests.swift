@@ -52,6 +52,22 @@ final class MockUsageTests: XCTestCase {
         let expected: EquatableTuple<CodableInput> = .init([try CodableInput(url), try CodableInput(keys), try CodableInput(options)])
         XCTAssertEqual(result, [expected])
     }
+    func testInputDescriptions() throws {
+        // Given a mock that was called
+        let url = URL(fileURLWithPath: "/source")
+        let keys: [URLResourceKey]? = nil
+        let options: FileManager.DirectoryEnumerationOptions = []
+        let fileManager = MockFileManager()
+        fileManager.copyItem = { _ in }
+        fileManager.contentsOfDirectoryAtUrl = { _ in return [] }
+        _ = try fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: keys, options: options)
+
+        // When calling contexts
+        let result = fileManager.$contentsOfDirectoryAtUrl.usage.inputDescriptions
+        
+        // Then the input contexts should be returned
+        XCTAssertEqual(result, [[String(describing: url), String(describing: keys), String(describing: options)]])
+    }
     
 //    func testWasCalledWithErrorHandling() throws {
 //        // Testing wasCalledWith<Value: Codable>(_ search: Value)
