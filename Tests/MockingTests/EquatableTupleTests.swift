@@ -80,6 +80,28 @@ final class EquatableTupleTests: XCTestCase {
         XCTAssertTrue("\(result!)".contains("value"))
     }
     
+    func testCodableInputDescriptionWithString() throws {
+        let original: String = "value"
+        
+        let input = try CodableInput(original)
+        
+        XCTAssertEqual(input.description, "value")
+    }
+    func testCodableInputDescriptionWithOptional() throws {
+        let original: String? = "value"
+        
+        let input = try CodableInput(original)
+        
+        XCTAssertEqual(input.description, "value")
+    }
+    func testCodableInputDescriptionWithNil() throws {
+        let original: String? = nil
+        
+        let input = try CodableInput(original)
+        
+        XCTAssertEqual(input.description, "nil")
+    }
+    
     public var allTests = [
         ("testEquatableTuple_handlesErrors", testEquatableTuple_handlesErrors),
         ("testCodableInputDecode", testCodableInputDecode),

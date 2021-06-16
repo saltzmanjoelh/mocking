@@ -33,7 +33,14 @@ public struct CodableInput: Equatable, Codable {
     
     public init<Value: Codable>(_ rawValue: Value) throws {
         self.data = try JSONEncoder().encode(rawValue)
-        self.description = String(describing: rawValue)
+        if case Optional<Any>.none = rawValue as Any {
+            self.description = "nil"
+        } else if case Optional<Any>.some(let value) = rawValue as Any {
+            self.description = String(describing: value)
+        } else {
+            self.description = String(describing: rawValue)
+        }
+        
     }
     public init<Value: Any>(anyValue rawValue: Value?) throws {
         if let value = rawValue {
