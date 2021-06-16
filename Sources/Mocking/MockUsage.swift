@@ -18,6 +18,9 @@ public class MockUsage<Context, Value> {
     }
     
     public var history = [Entry]()
+    public var contexts: [Context] {
+        history.map({ $0.context })
+    }
     
     public func addResult(context: Context, value: Value) {
         history.append(Entry(context: context, result: .success(value)))

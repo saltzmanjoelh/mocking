@@ -35,6 +35,24 @@ final class MockUsageTests: XCTestCase {
         XCTAssertTrue(result, "Searching by partial tuple should have returned true.")
     }
     
+    func testContexts() throws {
+        // Given a mock that was called
+        let url = URL(fileURLWithPath: "/source")
+        let keys: [URLResourceKey]? = nil
+        let options: FileManager.DirectoryEnumerationOptions = []
+        let fileManager = MockFileManager()
+        fileManager.copyItem = { _ in }
+        fileManager.contentsOfDirectoryAtUrl = { _ in return [] }
+        _ = try fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: keys, options: options)
+
+        // When calling contexts
+        let result = fileManager.$contentsOfDirectoryAtUrl.usage.contexts
+        
+        // Then the input contexts should be returned
+        let expected: EquatableTuple<CodableInput> = .init([try CodableInput(url), try CodableInput(keys), try CodableInput(options)])
+        XCTAssertEqual(result, [expected])
+    }
+    
 //    func testWasCalledWithErrorHandling() throws {
 //        // Testing wasCalledWith<Value: Codable>(_ search: Value)
 //        // throws when the search is not found
@@ -43,7 +61,7 @@ final class MockUsageTests: XCTestCase {
 //        let fileManager = MockFileManager()
 //        fileManager.copyItem = { _ in }
 //        fileManager.contentsOfDirectoryAtUrl = { _ in return [] }
-//        _ = try fileManager.contentsOfDirectory(at: URL(fileURLWithPath: "/unexpected_url1"), includingPropertiesForKeys: nil)
+//        _ = try fileManager.contentsOfDirectory(at: URL(fileURLWithPath: "/unexpected_url"), includingPropertiesForKeys: nil)
 //
 //        do {
 //            // When calling wasCalledWith
@@ -51,7 +69,7 @@ final class MockUsageTests: XCTestCase {
 //
 //            XCTFail("An error should have been thrown.")
 //        } catch {
-//            XCTAssertEqual("\(error)", MockUsageError.notFound("\(source)", [URL(fileURLWithPath: "/unexpected_url1")]).description)
+//            XCTAssertEqual("\(error)", MockUsageError.notFound("\(source)", [URL(fileURLWithPath: "/unexpected_url")]).description)
 //        }
 //    }
 //    func testWasCalledWithDoesNotThrowWithValidSearch() throws {
