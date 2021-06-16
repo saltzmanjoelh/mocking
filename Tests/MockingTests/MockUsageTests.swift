@@ -3,7 +3,7 @@ import XCTest
 
 final class MockUsageTests: XCTestCase {
     
-    func testSearchingForEquatableTupleUsage() throws {
+    func testSearchingForPartialEquatableTupleUsage() throws {
         // Given a mock that was called with EquatableTuple
         let fileManager = MockFileManager()
         fileManager.createDirectory = { _ in }
@@ -20,7 +20,7 @@ final class MockUsageTests: XCTestCase {
         // Then it should return true
         XCTAssertTrue(result, "Searching by partial tuple should have returned true.")
     }
-    func testSearchingForEquatableTupleUsage_copyItem() throws {
+    func testSearchingForPartialEquatableTupleUsage_copyItem() throws {
         // Given a mock that was called with EquatableTuple
         let fileManager = MockFileManager()
         fileManager.copyItem = { _ in }
@@ -104,7 +104,9 @@ final class MockUsageTests: XCTestCase {
 //    }
     
     public var allTests = [
-        ("testSearchingForEquatableTupleUsage", testSearchingForEquatableTupleUsage),
-        ("testSearchingForEquatableTupleUsage", testSearchingForEquatableTupleUsage),
+        ("testSearchingForPartialEquatableTupleUsage", testSearchingForPartialEquatableTupleUsage),
+        ("testSearchingForPartialEquatableTupleUsage_copyItem", testSearchingForPartialEquatableTupleUsage_copyItem),
+        ("testContexts", testContexts),
+        ("testInputDescriptions", testInputDescriptions),
     ]
 }

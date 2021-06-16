@@ -36,9 +36,9 @@ public struct CodableInput: Equatable, Codable {
         self.description = String(describing: rawValue)
     }
     public init<Value: Any>(anyValue rawValue: Value?) throws {
-        if rawValue != nil {
-            self.data = try JSONSerialization.data(withJSONObject: rawValue as Any, options: [])
-            self.description = String(describing: rawValue)
+        if let value = rawValue {
+            self.data = try JSONSerialization.data(withJSONObject: value as Any, options: [])
+            self.description = String(describing: value)
         } else {
             self.data = Data()
             self.description = "nil"
