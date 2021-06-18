@@ -55,7 +55,7 @@ public struct CodableInput: Equatable, Codable {
         return try JSONDecoder().decode(Value.self, from: data)
     }
     public func decode<Value: Any>() throws -> Value? {
-        guard data.count >= 0 else { return nil }
+        guard data.count > 0 else { return nil }
         return try JSONSerialization.jsonObject(with: data, options: []) as? Value
     }
 }
