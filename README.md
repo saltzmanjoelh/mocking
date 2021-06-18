@@ -8,7 +8,9 @@
 Simple property wrappers to help with mocks
 
 ## TLDR
-Take a look at [MockFileManager](Sources/Mocking/MockTypes/MockFileManager.swift) for different examples.
+Take a look at [MockFileManager](Sources/Mocking/MockTypes/MockFileManager.swift) for different examples. We create a protocol (`FileManageable`) that our subject which we want to mock (`FileManager`) can automatically conform to. We also create a mock version of that subject (`MockFileManager`) which conforms to the same protocol. We will now use the new protocol (`FileManageable`) for types instead of the original subject's type (`FileManager`). 
+
+The mock object will get properties marked with `@Mock` or `@ThrowingMock`. These will simply be wrappers to the original subject (`FileManager`). You can override these with custom closures to return a desired result and check their usage.
 
 ## Usage
 
