@@ -96,7 +96,7 @@ public class MockFileManager: NSObject, FileManageable {
         return _contentsAtPath.getValue(path)
     }
     @Mock
-    public var contentsAtPath = { path in
+    public var contentsAtPath = { path -> Data? in
         return FileManager.default.contents(atPath: path)
     }
     
