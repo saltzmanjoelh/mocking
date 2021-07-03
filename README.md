@@ -12,6 +12,8 @@ Take a look at [MockFileManager](Sources/Mocking/MockTypes/MockFileManager.swift
 
 The mock object will get properties marked with `@Mock` or `@ThrowingMock`. These will simply be wrappers to the original subject (`FileManager`). You can override these with custom closures to return a desired result and check their usage.
 
+You are basically building a wrapper class around the class that you want to mock. The the mocked functions in the wrapper class will perform the actual function by default but you can override this by setting the Mock closures to return a different response.
+
 ## Usage
 
 Let's use `FileManager` as our example. Let's say we want to mock the `fileExists(atPath path: String) -> Bool` function. Create a protocol that `FileManager` can automatically conform to:
