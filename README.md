@@ -46,7 +46,7 @@ To do this we have the `@Mock` [property wrapper](Sources/Mocking/Mocks/Mock.swi
 ```swift
 public class MockFileManager: NSObject, FileManageable {
     public func fileExists(atPath path: String) -> Bool {
-        return _fileExists.getValue(path) // Use our @Mock to perform the action and get the value
+        return $fileExists.getValue(path) // Use our @Mock to perform the action and get the value
     }
     @Mock
     public var fileExists = { path -> Bool in
@@ -110,7 +110,7 @@ Instead of using Swift's built-in tuple, let's use [EquatableTuple](Sources/Mock
 
 ```swift
 public func copyItem(at srcURL: URL, to dstURL: URL) throws {
-    try _copyItem.getValue(EquatableTuple([srcURL, dstURL]))
+    try $copyItem.getValue(EquatableTuple([srcURL, dstURL]))
 }
 @ThrowingMock
 public var copyItem = { (tuple: EquatableTuple) throws in
@@ -133,7 +133,7 @@ public func contentsOfDirectory(at url: URL, includingPropertiesForKeys keys: [U
     let context = EquatableTuple([try CodableInput(url),
                                   try CodableInput(keys),
                                   try CodableInput(mask)])
-    return try _contentsOfDirectoryAtUrl.getValue(context)
+    return try $contentsOfDirectoryAtUrl.getValue(context)
 }
 @ThrowingMock
 public var contentsOfDirectoryAtUrl = { (tuple: EquatableTuple<CodableInput>) throws in

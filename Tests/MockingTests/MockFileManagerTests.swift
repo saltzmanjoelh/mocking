@@ -157,6 +157,19 @@ final class MockFileManagerTests: XCTestCase {
         XCTAssertEqual(result, expected)
     }
     
+    func testChangeCurrentDirectoryPath() {
+        // Given an invalid path and a stubbed response
+        let path = "/\(UUID().uuidString)"
+        let fileManager = MockFileManager()
+        fileManager.changeCurrentDirectoryPath = { _ in return true }
+        
+        // When calling changeCurrentDirectoryPath
+        let result = fileManager.changeCurrentDirectoryPath(path)
+        
+        // Then true should be returned
+        XCTAssertTrue(result)
+    }
+    
     public var allTests = [
         ("testFileExists", testFileExists),
         ("testRemoveItem", testRemoveItem),
@@ -166,5 +179,6 @@ final class MockFileManagerTests: XCTestCase {
         ("testContentsAtPath", testContentsAtPath),
         ("testCreateDirectory", testCreateDirectory),
         ("testMountedVolumeURLs", testMountedVolumeURLs),
+        ("testChangeCurrentDirectoryPath", testChangeCurrentDirectoryPath),
     ]
 }

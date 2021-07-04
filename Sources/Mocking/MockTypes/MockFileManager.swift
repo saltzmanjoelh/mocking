@@ -25,7 +25,7 @@ public class MockFileManager: NSObject, FileManageable {
     
     // MARK: Single input
     public func fileExists(atPath path: String) -> Bool {
-        return _fileExists.getValue(path)
+        return $fileExists.getValue(path)
     }
     @Mock
     public var fileExists = { path -> Bool in
@@ -36,7 +36,7 @@ public class MockFileManager: NSObject, FileManageable {
     
     // MARK: Single input, throwing
     public func removeItem(at URL: URL) throws {
-        try _removeItem.getValue(URL)
+        try $removeItem.getValue(URL)
     }
     @ThrowingMock
     public var removeItem = { URL in
@@ -47,7 +47,7 @@ public class MockFileManager: NSObject, FileManageable {
     
     // MARK: Multiple inputs of the same type, throwing
     public func copyItem(at srcURL: URL, to dstURL: URL) throws {
-        try _copyItem.getValue(EquatableTuple([srcURL, dstURL]))
+        try $copyItem.getValue(EquatableTuple([srcURL, dstURL]))
     }
     @ThrowingMock
     public var copyItem = { (tuple: EquatableTuple<URL>) throws in
@@ -63,7 +63,7 @@ public class MockFileManager: NSObject, FileManageable {
     /// - Without EquatableTuple:
     /// ```swift
     /// public func contentsOfDirectory(at url: URL, includingPropertiesForKeys keys: [URLResourceKey]?, options mask: FileManager.DirectoryEnumerationOptions = []) throws -> [URL] {
-    ///     return try _contentsOfDirectory.getValue((url, keys, mask))
+    ///     return try $contentsOfDirectory.getValue((url, keys, mask))
     /// }
     /// @ThrowingStub public var contentsOfDirectory = { (tuple: (url: URL, keys: [URLResourceKey]?, mask: FileManager.DirectoryEnumerationOptions)) throws in
     /// return try FileManager.default.contentsOfDirectory(at: tuple.url,
@@ -74,7 +74,7 @@ public class MockFileManager: NSObject, FileManageable {
         let context = EquatableTuple([try CodableInput(url),
                                       try CodableInput(keys),
                                       try CodableInput(mask)])
-        return try _contentsOfDirectoryAtUrl.getValue(context)
+        return try $contentsOfDirectoryAtUrl.getValue(context)
     }
     @ThrowingMock
     public var contentsOfDirectoryAtUrl = { (tuple: EquatableTuple<CodableInput>) throws in
@@ -85,7 +85,7 @@ public class MockFileManager: NSObject, FileManageable {
     
     
     public func contentsOfDirectory(atPath path: String) throws -> [String] {
-        return try _contentsOfDirectoryAtPath.getValue(path)
+        return try $contentsOfDirectoryAtPath.getValue(path)
     }
     @ThrowingMock
     public var contentsOfDirectoryAtPath = { (path: String) throws in
@@ -93,7 +93,7 @@ public class MockFileManager: NSObject, FileManageable {
     }
     
     public func contents(atPath path: String) -> Data? {
-        return _contentsAtPath.getValue(path)
+        return $contentsAtPath.getValue(path)
     }
     @Mock
     public var contentsAtPath = { path -> Data? in
@@ -104,7 +104,7 @@ public class MockFileManager: NSObject, FileManageable {
         let codedUrl = try CodableInput(url)
         let codedCreateIntermediates = try CodableInput(createIntermediates)
         let codedAttributes = try CodableInput(anyValue: attributes)
-        return try _createDirectory.getValue(EquatableTuple([codedUrl, codedCreateIntermediates, codedAttributes]))
+        return try $createDirectory.getValue(EquatableTuple([codedUrl, codedCreateIntermediates, codedAttributes]))
     }
     @ThrowingMock
     public var createDirectory = { (tuple: EquatableTuple<CodableInput>) throws in
@@ -122,7 +122,7 @@ public class MockFileManager: NSObject, FileManageable {
                                                      options: try! tuple.inputs[1].decode())
     }
     public func mountedVolumeURLs(includingResourceValuesForKeys propertyKeys: [URLResourceKey]?, options: FileManager.VolumeEnumerationOptions = []) -> [URL]? {
-        return _mountedVolumeURLs.getValue(EquatableTuple([try! CodableInput(propertyKeys), try! CodableInput(options)]))
+        return $mountedVolumeURLs.getValue(EquatableTuple([try! CodableInput(propertyKeys), try! CodableInput(options)]))
     }
     
     public var currentDirectoryPath: String = FileManager.default.currentDirectoryPath
@@ -133,7 +133,7 @@ public class MockFileManager: NSObject, FileManageable {
     }
     
     public func changeCurrentDirectoryPath(_ path: String) -> Bool {
-        return _changeCurrentDirectoryPath.getValue(path)
+        return $changeCurrentDirectoryPath.getValue(path)
     }
 }
 
