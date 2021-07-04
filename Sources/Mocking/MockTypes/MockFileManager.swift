@@ -121,12 +121,20 @@ public class MockFileManager: NSObject, FileManageable {
         return FileManager.default.mountedVolumeURLs(includingResourceValuesForKeys: try! tuple.inputs[0].decode(),
                                                      options: try! tuple.inputs[1].decode())
     }
-    
     public func mountedVolumeURLs(includingResourceValuesForKeys propertyKeys: [URLResourceKey]?, options: FileManager.VolumeEnumerationOptions = []) -> [URL]? {
         return _mountedVolumeURLs.getValue(EquatableTuple([try! CodableInput(propertyKeys), try! CodableInput(options)]))
     }
     
     public var currentDirectoryPath: String = FileManager.default.currentDirectoryPath
+    
+    @Mock
+    public var changeCurrentDirectoryPath = { (path: String) -> Bool in
+        return FileManager.default.changeCurrentDirectoryPath(path)
+    }
+    
+    public func changeCurrentDirectoryPath(_ path: String) -> Bool {
+        return _changeCurrentDirectoryPath.getValue(path)
+    }
 }
 
 
