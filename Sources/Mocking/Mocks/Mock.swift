@@ -7,30 +7,55 @@
 
 import Foundation
 
+
+/// Mock a function and store it's usage history.
 @propertyWrapper public final class Mock<Context, Value>: Mockable {
 
-    public var usage: MockUsage<Context, Value>
-    public var defaultValueLoader: (Context) -> Value
-    public var wrappedValue: (Context) -> Value
+    
+    /// Get direct access the underlying Mock object.
     public var projectedValue: Mock<Context, Value> { return self }
     
+    /// Stores the input and output of the when the Mock gets a value.
+    public var usage: MockUsage<Context, Value>
+    
+    /// The initial close that the Mock was setup with.
+    public var defaultValueLoader: (Context) -> Value
+    
+    /// Use to the current value load to get an expected value.
+    public var wrappedValue: (Context) -> Value {
+        get {
+            return getValue
+        }
+        set {
+            currentValueLoader = newValue
+        }
+    }
+    
+    /// This will either be the `defaultValueLoader` from when you initialized the Mock.
+    /// Or this will be a custom one for mocking expected values.
+    var currentValueLoader: (Context) -> Value
+    
+    
+    /// Initial the Mock with a default value loader.
+    /// - Parameter wrappedValue: A closure to return a value. This is typically the live version of the function. You can override this later and reset back to this original value loader.
     public init(wrappedValue: @escaping (Context) -> Value) {
         self.usage = MockUsage()
         self.defaultValueLoader = wrappedValue
-        self.wrappedValue = wrappedValue
+        self.currentValueLoader = wrappedValue
     }
     
-    // We can't use dynamic get/set in var wrappedValue because
-    // we need to provide the context.
+    
+    /// Get a value from the current value loader
+    /// - Parameter context: The context required by the closure to get the value.
+    /// - Returns: The value from the value loader.
     public func getValue(_ context: Context) -> Value {
-        let result = wrappedValue(context)
+        let result = currentValueLoader(context)
         usage.addResult(context: context, value: result)
         return result
     }
     
-    // Reset the closure to the default one used when the mock
-    // was created.
+    /// Reset the value loader to the default one used when the Mock was created.
     public func resetLoader() {
-        self.wrappedValue = defaultValueLoader
+        self.currentValueLoader = defaultValueLoader
     }
 }

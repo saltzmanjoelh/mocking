@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Keep track of how the Mockable object was used.
 public class MockUsage<Context, Value> {
     public class Entry {
         public var context: Context

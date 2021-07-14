@@ -14,15 +14,15 @@ class MockTests: XCTestCase {
     func testResetLoader_mock() {
         // Given a mock that has been reset
         let fileManager = MockFileManager()
-        fileManager.fileExists = { _ in return true }
-        fileManager.$fileExists.resetLoader()
+        fileManager.fileExistsMock = { _ in return true }
+        fileManager.$fileExistsMock.resetLoader()
         
         // When calling the mock
         let result = fileManager.fileExists(atPath: "/invalid")
         
         // Then the defaultValueLoader should be used
         XCTAssertFalse(result, "False should have been returned for the \"invalid\" path.")
-        XCTAssertTrue(fileManager.$fileExists.wasCalled, "The mock's default value loader should have been called.")
+        XCTAssertTrue(fileManager.$fileExistsMock.wasCalled, "The mock's default value loader should have been called.")
     }
     func testResetLoader_throwingMock() throws {
         enum TestError: Error {
@@ -30,8 +30,8 @@ class MockTests: XCTestCase {
         }
         // Given a mock that has been reset
         let fileManager = MockFileManager()
-        fileManager.contentsOfDirectoryAtPath = { _ in ["should not be returned"] }
-        fileManager.$contentsOfDirectoryAtPath.resetLoader()
+        fileManager.contentsOfDirectoryAtPathMock = { _ in ["should not be returned"] }
+        fileManager.$contentsOfDirectoryAtPathMock.resetLoader()
         
         do {
             // When calling the mock
@@ -39,7 +39,7 @@ class MockTests: XCTestCase {
             
         } catch {
             // Then the defaultValueLoader should be used
-            XCTAssertTrue(fileManager.$contentsOfDirectoryAtPath.wasCalled, "The mock's default value loader should have been called.")
+            XCTAssertTrue(fileManager.$contentsOfDirectoryAtPathMock.wasCalled, "The mock's default value loader should have been called.")
             // and an error should be thrown
             XCTAssertTrue("\(error)".contains("doesn’t exist."))
         }

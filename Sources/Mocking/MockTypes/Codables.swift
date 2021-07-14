@@ -7,6 +7,8 @@
 
 import Foundation
 
+// Simple Codable conformance for types that don't have it specified already.
+
 extension URLResourceKey: Codable { }
 extension FileManager.DirectoryEnumerationOptions: Codable { }
 extension FileAttributeKey: Codable { }
