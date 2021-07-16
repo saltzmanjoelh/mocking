@@ -19,7 +19,11 @@ import Foundation
     public var usage: MockUsage<Context, Value>
     
     /// The initial close that the Mock was setup with.
-    public var defaultValueLoader: (Context) -> Value
+    public var defaultValueLoader: (Context) -> Value {
+        didSet {
+            currentValueLoader = defaultValueLoader
+        }
+    }
     
     /// Use to the current value load to get an expected value.
     public var wrappedValue: (Context) -> Value {
