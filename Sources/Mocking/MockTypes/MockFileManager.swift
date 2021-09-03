@@ -9,7 +9,7 @@ import Foundation
 
 public protocol FileManageable {
     var currentDirectoryPath: String { get }
-    var homeDirectoryForCurrentUser: URL { get }
+    var usersHomeDirectory: URL { get }
     
     func fileExists(atPath path: String) -> Bool
     func removeItem(at URL: URL) throws
@@ -21,11 +21,13 @@ public protocol FileManageable {
     func mountedVolumeURLs(includingResourceValuesForKeys propertyKeys: [URLResourceKey]?, options: FileManager.VolumeEnumerationOptions) -> [URL]?
 }
 extension FileManager: FileManageable {
-    #if swift(<=5.5)
-    public var homeDirectoryForCurrentUser: URL {
-        return URL(fileURLWithPath: NSHomeDirectory())
+    public var usersHomeDirectory: URL {
+        if #available(macOS 10.12, *) {
+            return homeDirectoryForCurrentUser
+        } else {
+            return URL(fileURLWithPath: NSHomeDirectory())
+        }
     }
-    #endif
 }
 
 
@@ -151,11 +153,11 @@ public class MockFileManager: NSObject, FileManageable {
         return FileManager.default.currentDirectoryPath
     }
     
-    public var homeDirectoryForCurrentUser: URL {
-        return homeDirectoryForCurrentUserMock(Void())
+    public var usersHomeDirectory: URL {
+        return usersHomeDirectoryMock(Void())
     }
     @Mock
-    public var homeDirectoryForCurrentUserMock = { () -> URL in
+    public var usersHomeDirectoryMock = { () -> URL in
         if #available(macOS 10.12, *) {
             return FileManager.default.homeDirectoryForCurrentUser
         } else {

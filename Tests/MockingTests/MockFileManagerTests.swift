@@ -186,27 +186,27 @@ final class MockFileManagerTests: XCTestCase {
         // Then the path should be returned
         XCTAssertEqual(result, path)
     }
-    func testHomeDirectoryForCurrentUser() {
+    func testUsersHomeDirectory() {
         // Given an path
         let dir = URL(fileURLWithPath:"/\(UUID().uuidString)")
         let fileManager = MockFileManager()
-        fileManager.homeDirectoryForCurrentUserMock = { _ in
+        fileManager.usersHomeDirectoryMock = { _ in
             return dir
         }
 
         // When calling homeDirectoryForCurrentUser
-        let result = fileManager.homeDirectoryForCurrentUser
+        let result = fileManager.usersHomeDirectory
 
         // Then the path should be returned
         XCTAssertEqual(result, dir)
     }
-    func testHomeDirectoryForCurrentUserDefaultValue() {
+    func testUsersHomeDirectoryDefaultValue() {
         // Given the default home path
         let dir = URL(fileURLWithPath: NSHomeDirectory())
         let fileManager = MockFileManager()
 
         // When calling homeDirectoryForCurrentUser
-        let result = fileManager.homeDirectoryForCurrentUser
+        let result = fileManager.usersHomeDirectory
 
         // Then the path should be returned
         XCTAssertEqual(result, dir)
@@ -223,6 +223,7 @@ final class MockFileManagerTests: XCTestCase {
         ("testMountedVolumeURLs", testMountedVolumeURLs),
         ("testChangeCurrentDirectoryPath", testChangeCurrentDirectoryPath),
         ("testCurrentDirectoryPath", testCurrentDirectoryPath),
-        ("testHomeDirectoryForCurrentUser", testHomeDirectoryForCurrentUser),
+        ("testUsersHomeDirectory", testUsersHomeDirectory),
+        ("testUsersHomeDirectoryDefaultValue", testUsersHomeDirectoryDefaultValue),
     ]
 }
