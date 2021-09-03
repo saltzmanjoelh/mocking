@@ -18,7 +18,7 @@ import Foundation
     /// Stores the input and output of the when the Mock gets a value.
     public var usage: MockUsage<Context, Value>
     
-    /// The initial close that the Mock was setup with.
+    /// The initial closure that the Mock was setup with.
     public var defaultValueLoader: (Context) -> Value {
         didSet {
             currentValueLoader = defaultValueLoader

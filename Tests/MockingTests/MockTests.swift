@@ -54,6 +54,20 @@ class MockTests: XCTestCase {
         // Then the default value loader should be called
         XCTAssertTrue(result, "True should have been returned")
     }
+    func testSetDefaultValueLoader() {
+        // Given a mock's defaultValueLoader that has been modified
+        // after initialization
+        let fileManager = MockFileManager()
+        fileManager.$fileExistsMock.defaultValueLoader = { _ in
+            false
+        }
+        
+        // When calling the mock
+        let result = fileManager.fileExists(atPath: "/tmp")
+        
+        // Then the update default value loader should be called
+        XCTAssertFalse(result, "False should have been returned. The default implementation is to return true.")
+    }
 
     
     public var allTests = [

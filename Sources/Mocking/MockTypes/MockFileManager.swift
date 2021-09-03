@@ -9,6 +9,7 @@ import Foundation
 
 public protocol FileManageable {
     var currentDirectoryPath: String { get }
+    var homeDirectoryForCurrentUser: URL { get }
     
     func fileExists(atPath path: String) -> Bool
     func removeItem(at URL: URL) throws
@@ -19,7 +20,13 @@ public protocol FileManageable {
     func createDirectory(at url: URL, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]?) throws
     func mountedVolumeURLs(includingResourceValuesForKeys propertyKeys: [URLResourceKey]?, options: FileManager.VolumeEnumerationOptions) -> [URL]?
 }
-extension FileManager: FileManageable { }
+extension FileManager: FileManageable {
+    #if swift(>=5.5)
+    public var homeDirectoryForCurrentUser: URL {
+        return URL(fileURLWithPath: NSHomeDirectory())
+    }
+    #endif
+}
 
 
 public class MockFileManager: NSObject, FileManageable {
@@ -126,7 +133,6 @@ public class MockFileManager: NSObject, FileManageable {
                                                      options: try! tuple.inputs[1].decode())
     }
     
-    public var currentDirectoryPath: String = FileManager.default.currentDirectoryPath
     public func changeCurrentDirectoryPath(_ path: String) -> Bool {
         return changeCurrentDirectoryPathMock(path)
     }
@@ -134,8 +140,29 @@ public class MockFileManager: NSObject, FileManageable {
     public var changeCurrentDirectoryPathMock = { (path: String) -> Bool in
         return FileManager.default.changeCurrentDirectoryPath(path)
     }
+
     
+    // MARK: Instance Vars
+    public var currentDirectoryPath: String {
+        return currentDirectoryPathMock(Void())
+    }
+    @Mock
+    public var currentDirectoryPathMock = { () -> String in
+        return FileManager.default.currentDirectoryPath
+    }
     
+    public var homeDirectoryForCurrentUser: URL {
+        return homeDirectoryForCurrentUserMock(Void())
+    }
+    @Mock
+    public var homeDirectoryForCurrentUserMock = { () -> URL in
+        if #available(macOS 10.12, *) {
+            return FileManager.default.homeDirectoryForCurrentUser
+        } else {
+            // Fallback on earlier versions
+            return URL(fileURLWithPath: NSHomeDirectory())
+        }
+    }
 }
 
 

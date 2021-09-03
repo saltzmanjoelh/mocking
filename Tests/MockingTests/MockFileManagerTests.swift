@@ -172,6 +172,46 @@ final class MockFileManagerTests: XCTestCase {
         XCTAssertTrue(result)
     }
     
+    func testCurrentDirectoryPath() {
+        // Given an path
+        let path = "/\(UUID().uuidString)"
+        let fileManager = MockFileManager()
+        fileManager.currentDirectoryPathMock = { _ in
+            return path
+        }
+
+        // When calling currentDirectory
+        let result = fileManager.currentDirectoryPath
+
+        // Then the path should be returned
+        XCTAssertEqual(result, path)
+    }
+    func testHomeDirectoryForCurrentUser() {
+        // Given an path
+        let dir = URL(fileURLWithPath:"/\(UUID().uuidString)")
+        let fileManager = MockFileManager()
+        fileManager.homeDirectoryForCurrentUserMock = { _ in
+            return dir
+        }
+
+        // When calling homeDirectoryForCurrentUser
+        let result = fileManager.homeDirectoryForCurrentUser
+
+        // Then the path should be returned
+        XCTAssertEqual(result, dir)
+    }
+    func testHomeDirectoryForCurrentUserDefaultValue() {
+        // Given the default home path
+        let dir = URL(fileURLWithPath: NSHomeDirectory())
+        let fileManager = MockFileManager()
+
+        // When calling homeDirectoryForCurrentUser
+        let result = fileManager.homeDirectoryForCurrentUser
+
+        // Then the path should be returned
+        XCTAssertEqual(result, dir)
+    }
+    
     public var allTests = [
         ("testFileExists", testFileExists),
         ("testRemoveItem", testRemoveItem),
@@ -182,5 +222,7 @@ final class MockFileManagerTests: XCTestCase {
         ("testCreateDirectory", testCreateDirectory),
         ("testMountedVolumeURLs", testMountedVolumeURLs),
         ("testChangeCurrentDirectoryPath", testChangeCurrentDirectoryPath),
+        ("testCurrentDirectoryPath", testCurrentDirectoryPath),
+        ("testHomeDirectoryForCurrentUser", testHomeDirectoryForCurrentUser),
     ]
 }
