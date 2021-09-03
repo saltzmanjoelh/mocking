@@ -21,7 +21,7 @@ public protocol FileManageable {
     func mountedVolumeURLs(includingResourceValuesForKeys propertyKeys: [URLResourceKey]?, options: FileManager.VolumeEnumerationOptions) -> [URL]?
 }
 extension FileManager: FileManageable {
-    #if swift(>=5.5)
+    #if swift(<=5.5)
     public var homeDirectoryForCurrentUser: URL {
         return URL(fileURLWithPath: NSHomeDirectory())
     }
